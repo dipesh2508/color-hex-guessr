@@ -59,9 +59,9 @@ export default function Home() {
       const singleHex = userHex.slice(i, i + 1);
       const correct = singleHex === colorHex.slice(i, i + 1);
 
-      //closetoanswer
       const userHexInt = parseInt(singleHex, 16);
       const colorHexInt = parseInt(colorHex.slice(i, i + 1), 16);
+
       const closeToAnswer: CloseToAnswer =
         userHexInt > colorHexInt ? "downward" : "upward";
 
@@ -150,15 +150,15 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 px-3">
         {colorArray?.map((colorArray, index) => (
           <div key={index} className="flex flex-row space-x-4">
             {colorArray.map((color, index) => (
               <div
                 key={index}
                 className={cn(
-                  "size-12 rounded-md flex items-center justify-center border",
-                  color.correct ? "bg-green-500" : "bg-red-500"
+                  "size-10 md:size-12 rounded-md flex items-center justify-center border",
+                  color.correct ? "bg-green-600" : "bg-red-600"
                 )}
               >
                 {!color.correct ? (
@@ -170,7 +170,6 @@ export default function Home() {
                 ) : (
                   ""
                 )}
-
                 {color.singleHex}
               </div>
             ))}
