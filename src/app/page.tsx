@@ -8,13 +8,14 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 const hexCodeSchema = z.object({
   hexCode: z.string().regex(/^[0-9a-fA-F]{6}$/, "Invalid hex code."),
@@ -22,15 +23,20 @@ const hexCodeSchema = z.object({
 
 type FormData = z.infer<typeof hexCodeSchema>;
 
+type CloseToAnswer = "upward" | "downward";
+
 interface ColorArray {
   singleHex: string;
   correct: boolean;
+  closeToAnswer: CloseToAnswer;
 }
 
 export default function Home() {
   const [color, setColor] = useState<string>("#FFFFFF");
   const [userColor, setUserColor] = useState<string>("");
   const [colorArray, setColorArray] = useState<ColorArray[][]>();
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(hexCodeSchema),
@@ -45,14 +51,21 @@ export default function Home() {
     setColor(getRandomHexColor());
   }, []);
 
-  function checkHex(data: FormData):ColorArray[] {
-    const userHex = data.hexCode.toLowerCase();
-    const colorHex = color.toLowerCase().slice(1);
-    const colorArray:ColorArray[] = [];
+  function checkHex(data: FormData): ColorArray[] {
+    const userHex = data.hexCode.toUpperCase();
+    const colorHex = color.toUpperCase().slice(1);
+    const colorArray: ColorArray[] = [];
     for (let i = 0; i < 6; i++) {
       const singleHex = userHex.slice(i, i + 1);
       const correct = singleHex === colorHex.slice(i, i + 1);
-      colorArray.push({ singleHex, correct });
+
+      //closetoanswer
+      const userHexInt = parseInt(singleHex, 16);
+      const colorHexInt = parseInt(colorHex.slice(i, i + 1), 16);
+      const closeToAnswer: CloseToAnswer =
+        userHexInt > colorHexInt ? "downward" : "upward";
+
+      colorArray.push({ singleHex, correct, closeToAnswer });
     }
     return colorArray;
   }
@@ -61,30 +74,43 @@ export default function Home() {
     const results = checkHex(data);
     // add the array to the map state
     setColorArray((prev) => {
+      //limit to 6 arrays, set isGameOver to true
+      if (prev && prev.length >= 4) {
+        setIsGameOver(true);
+      }
+
       if (!prev) {
         return [results];
       }
-      return [...prev, results];
+      return [results, ...prev];
     });
 
     console.log(colorArray);
     setUserColor("#" + data.hexCode);
+
+    if (results.every((color) => color.correct)) {
+      setIsCorrect(true);
+      setIsGameOver(true);
+    }
+
     reset();
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen gap-8 flex-col items-center p-12">
+      <h1 className="text-4xl font-bold">Color Hex Code Guesser</h1>
       <div className="flex flex-row gap-8">
         <div
-          className="size-64 flex items-center justify-center border"
+          className="size-36 sm:size-48 md:size-64 flex items-center justify-center border"
           style={{ backgroundColor: color }}
         ></div>
         {/* user color box */}
         <div
-          className="size-64 flex items-center justify-center border"
+          className="size-36 sm:size-48 md:size-64 flex items-center justify-center border"
           style={{ backgroundColor: userColor }}
         ></div>
       </div>
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -105,9 +131,52 @@ export default function Home() {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+
+          <Button type="submit" disabled={isGameOver}>
+            Submit
+          </Button>
         </form>
       </Form>
+
+      {isCorrect && isGameOver && (
+        <div className=" text-green-600 p-4 rounded-md">
+          You guessed the color!
+        </div>
+      )}
+
+      {isGameOver && !isCorrect && (
+        <div className=" text-red-600 p-4 rounded-md">
+          You didn&#39;t guess the color!
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
+        {colorArray?.map((colorArray, index) => (
+          <div key={index} className="flex flex-row space-x-4">
+            {colorArray.map((color, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "size-12 rounded-md flex items-center justify-center border",
+                  color.correct ? "bg-green-500" : "bg-red-500"
+                )}
+              >
+                {!color.correct ? (
+                  color.closeToAnswer === "upward" ? (
+                    <ArrowUp size={18} />
+                  ) : (
+                    <ArrowDown size={18} />
+                  )
+                ) : (
+                  ""
+                )}
+
+                {color.singleHex}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </main>
   );
 }
