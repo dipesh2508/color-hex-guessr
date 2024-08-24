@@ -70,6 +70,14 @@ export default function Home() {
     return colorArray;
   }
 
+  function resetGame() {
+    setColor(getRandomHexColor());
+    setColorArray([]);
+    setIsCorrect(false);
+    setIsGameOver(false);
+    setUserColor("");
+  }
+
   const onSubmit = (data: FormData) => {
     const results = checkHex(data);
     // add the array to the map state
@@ -148,6 +156,12 @@ export default function Home() {
         <div className=" text-red-600 p-4 rounded-md">
           You didn&#39;t guess the color!
         </div>
+      )}
+
+      {isGameOver && (
+        <Button onClick={resetGame} className="-mt-4">
+          Restart
+        </Button>
       )}
 
       <div className="flex flex-col gap-4 px-3">
