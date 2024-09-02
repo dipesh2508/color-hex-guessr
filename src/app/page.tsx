@@ -105,91 +105,102 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen gap-8 flex-col items-center p-12">
-      <h1 className="text-4xl font-bold">Color Hex Code Guesser</h1>
-      <div className="flex flex-row gap-8">
-        <div
-          className="size-36 sm:size-48 md:size-64 flex items-center justify-center border"
-          style={{ backgroundColor: color }}
-        ></div>
-        {/* user color box */}
-        <div
-          className="size-36 sm:size-48 md:size-64 flex items-center justify-center border"
-          style={{ backgroundColor: userColor }}
-        ></div>
-      </div>
-
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-row space-x-4 items-end"
-        >
-          <FormField
-            control={form.control}
-            name="hexCode"
-            render={({ field }) => (
-              <FormItem className="flex flex-col space-x-2 items-end">
-                <div className="flex space-x-2 items-end">
-                  <FormLabel className="text-3xl">#</FormLabel>
-                  <FormControl>
-                    <Input placeholder="enter you guess" {...field} />
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" disabled={isGameOver}>
-            Submit
-          </Button>
-        </form>
-      </Form>
-
-      {isCorrect && isGameOver && (
-        <div className=" text-green-600 p-4 rounded-md">
-          You guessed the color!
+    <>
+      <main className="flex min-h-screen gap-8 flex-col items-center p-12">
+        <h1 className="text-4xl font-bold">Color Hex Code Guesser</h1>
+        <div className="flex flex-row gap-8">
+          <div
+            className="size-36 sm:size-48 md:size-64 flex items-center justify-center border"
+            style={{ backgroundColor: color }}
+          ></div>
+          {/* user color box */}
+          <div
+            className="size-36 sm:size-48 md:size-64 flex items-center justify-center border"
+            style={{ backgroundColor: userColor }}
+          ></div>
         </div>
-      )}
 
-      {isGameOver && !isCorrect && (
-        <div className=" text-red-600 p-4 rounded-md">
-          You didn&#39;t guess the color!
-        </div>
-      )}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-row space-x-4 items-end"
+          >
+            <FormField
+              control={form.control}
+              name="hexCode"
+              render={({ field }) => (
+                <FormItem className="flex flex-col space-x-2 items-end">
+                  <div className="flex space-x-2 items-end">
+                    <FormLabel className="text-3xl">#</FormLabel>
+                    <FormControl>
+                      <Input placeholder="enter you guess" {...field} />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-      {isGameOver && (
-        <Button onClick={resetGame} className="-mt-4">
-          Restart
-        </Button>
-      )}
+            <Button type="submit" disabled={isGameOver}>
+              Submit
+            </Button>
+          </form>
+        </Form>
 
-      <div className="flex flex-col gap-4 px-3">
-        {colorArray?.map((colorArray, index) => (
-          <div key={index} className="flex flex-row space-x-4">
-            {colorArray.map((color, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "size-10 md:size-12 rounded-md flex items-center justify-center border",
-                  color.correct ? "bg-green-600" : "bg-red-600"
-                )}
-              >
-                {!color.correct ? (
-                  color.closeToAnswer === "upward" ? (
-                    <ArrowUp size={18} />
-                  ) : (
-                    <ArrowDown size={18} />
-                  )
-                ) : (
-                  ""
-                )}
-                {color.singleHex}
-              </div>
-            ))}
+        {isCorrect && isGameOver && (
+          <div className=" text-green-600 p-4 rounded-md">
+            You guessed the color!
           </div>
-        ))}
-      </div>
-    </main>
+        )}
+
+        {isGameOver && !isCorrect && (
+          <div className=" text-red-600 p-4 rounded-md">
+            You didn&#39;t guess the color!
+          </div>
+        )}
+
+        {isGameOver && (
+          <Button onClick={resetGame} className="-mt-4">
+            Restart
+          </Button>
+        )}
+
+        <div className="flex flex-col gap-4 px-3">
+          {colorArray?.map((colorArray, index) => (
+            <div key={index} className="flex flex-row space-x-4">
+              {colorArray.map((color, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "size-10 md:size-12 rounded-md flex items-center justify-center border",
+                    color.correct ? "bg-green-600" : "bg-red-600"
+                  )}
+                >
+                  {!color.correct ? (
+                    color.closeToAnswer === "upward" ? (
+                      <ArrowUp size={18} />
+                    ) : (
+                      <ArrowDown size={18} />
+                    )
+                  ) : (
+                    ""
+                  )}
+                  {color.singleHex}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </main>
+      <footer className="-mt-14">
+        <div
+          className="
+          text-sm text-gray-500 py-4 text-center
+          "
+        >
+          Made with ❤️ by Dipesh
+        </div>
+      </footer>
+    </>
   );
 }
